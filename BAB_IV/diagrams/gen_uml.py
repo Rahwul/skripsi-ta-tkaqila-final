@@ -59,18 +59,17 @@ start
 :Input Data Anak & Orang Tua;
 :Klik "Submit";
 |Sistem|
-if (Apakah ada data kosong?) then (Ya)
+while (Apakah ada data kosong?) is (Ya)
   :Tampilkan pesan error warna merah;
   |Orang Tua|
   :Perbaiki Input;
   :Klik "Submit";
-else (Tidak)
   |Sistem|
-  :Validasi ke server;
-  :Proses Pendaftaran Berhasil;
-  :Tampilkan Halaman Sukses;
-  stop
-endif
+endwhile (Tidak)
+:Validasi ke server;
+:Proses Pendaftaran Berhasil;
+:Tampilkan Halaman Sukses;
+stop
 @enduml""",
 
     "rahwul_activity.png": """@startuml
