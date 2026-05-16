@@ -108,6 +108,30 @@ Biarkan proses ini jalan saat mengembangkan UI. Halaman diakses lewat **URL `php
 
 ---
 
+## 5. Menggunakan file .bat (Alternatif Windows)
+
+Untuk pengembangan sehari-hari, Anda bisa menjalankan dalam 3 terminal terpisah menggunakan file `.bat` yang disediakan:
+
+1. **Backend Go (API)**
+   Jalankan file `run-go-api.bat`:
+   ```bash
+   run-go-api.bat
+   ```
+
+2. **Vite dev server**
+   Jalankan file `run-vite-dev.bat`:
+   ```bash
+   run-vite-dev.bat
+   ```
+
+3. **Laravel server**
+   Jalankan file `run-laravel-serve.bat`:
+   ```bash
+   run-laravel-serve.bat
+   ```
+
+---
+
 ## Ringkasan: apa yang harus jalan bersamaan
 
 | Layanan    | Perintah / catatan                                      |
@@ -173,6 +197,7 @@ Detail tool dan keamanan: [`mcp-server/README.md`](mcp-server/README.md).
 | Laravel error session / migrate | `php artisan migrate` |
 | CSS tidak berubah | Pastikan `npm run dev` jalan; hard refresh browser (`Ctrl+F5`) |
 | MCP tidak connect | Pastikan `npm run build` di `mcp-server`, path di `mcp.json` benar, restart Cursor |
+| Native binding Vite error | Jalankan `npm i -D @tailwindcss/oxide-win32-x64-msvc` |
 
 ---
 

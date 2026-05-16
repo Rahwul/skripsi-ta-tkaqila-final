@@ -1,13 +1,13 @@
 <div align="center">
 
-**Platform Pendaftaran Siswa Baru Berbasis Web**
+**Rancang Bangun REST API Sistem Informasi Pendaftaran Online PAUD TK Aqila Menggunakan GoFiber Framework dengan Metode Agile**
 
 [![Go](https://img.shields.io/badge/Go-1.20+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev)
 [![GoFiber](https://img.shields.io/badge/GoFiber-v2-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://gofiber.io)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
 [![GORM](https://img.shields.io/badge/GORM-v1.25-29BEB0?style=for-the-badge&logo=gorm&logoColor=white)](https://gorm.io)
 
-> Sistem pendaftaran online terpadu untuk mempermudah proses penerimaan siswa baru secara digital. Dibangun dengan performa tinggi menggunakan backend **GoFiber** dan arsitektur RESTful API yang terstruktur.
+> Sistem pendaftaran online terpadu untuk mempermudah proses penerimaan siswa baru secara digital. Dibangun dengan performa tinggi menggunakan backend **GoFiber** dan arsitektur RESTful API yang terstruktur, dikombinasikan dengan frontend Laravel.
 
 </div>
 
@@ -163,6 +163,8 @@ go run main.go
 air
 ```
 Aplikasi backend akan berjalan di `http://localhost:3000`.
+
+Untuk cara menjalankan frontend Laravel, Go API, Vite, dan MCP secara lengkap, silakan lihat file `RUNNING.md`.
 
 ---
 
