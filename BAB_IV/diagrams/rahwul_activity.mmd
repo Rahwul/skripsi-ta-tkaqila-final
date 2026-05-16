@@ -1,0 +1,18 @@
+stateDiagram-v2
+    [*] --> TerimaRequest: Terima HTTP POST /api/auth/login
+    TerimaRequest --> ParsingJSON: Baca payload email & password
+    
+    state CekDatabase {
+        ParsingJSON --> CariEmail: Query DB dengan GORM
+        CariEmail --> EmailTidakDitemukan
+        CariEmail --> BandingkanHash: Jika ditemukan (Bcrypt Compare)
+    }
+    
+    EmailTidakDitemukan --> Return401: Kirim JSON Error (401 Unauthorized)
+    BandingkanHash --> Return401: Password salah
+    BandingkanHash --> GenerateJWT: Password cocok
+    
+    GenerateJWT --> Return200: Kirim JSON Response + JWT Token (200 OK)
+    
+    Return401 --> [*]
+    Return200 --> [*]

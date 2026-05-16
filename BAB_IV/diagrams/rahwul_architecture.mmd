@@ -1,0 +1,18 @@
+flowchart TD
+    Client(Client Apps / Front End)
+    
+    subgraph Backend [Arsitektur Back End - Golang]
+        Router(Router - GoFiber)
+        Middleware(Auth Middleware - JWT)
+        Controller(Handler / Controller)
+        Repo(Repository - GORM)
+    end
+    
+    DB[(Database MySQL)]
+    
+    Client -->|HTTP Request| Router
+    Router --> Middleware
+    Middleware -->|Token Valid| Controller
+    Controller --> Repo
+    Repo <-->|Query/Simpan Data| DB
+    Controller -->|HTTP JSON Response| Client

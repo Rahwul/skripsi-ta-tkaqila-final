@@ -1,0 +1,17 @@
+flowchart TD
+    User((Orang Tua / Admin))
+    
+    subgraph Frontend [Arsitektur Front End - Laravel]
+        View(View - Blade/TailwindCSS)
+        Controller(Controllers)
+        Route(Web Routes)
+    end
+    
+    Backend[(REST API Backend)]
+    
+    User -->|Interaksi UI| View
+    View -->|User Input| Route
+    Route -->|Meneruskan Request| Controller
+    Controller -->|Menampilkan Halaman| View
+    
+    Controller <-->|HTTP Request/Response JSON| Backend

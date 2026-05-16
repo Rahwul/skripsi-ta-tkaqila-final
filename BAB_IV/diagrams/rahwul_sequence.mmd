@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant Client as Client Application
+    participant Route as GoFiber Router
+    participant Middleware as JWT Middleware
+    participant Handler as StudentHandler
+    participant Repo as GORM / Database
+
+    Client->>Route: HTTP POST /api/students (Header: Bearer Token)
+    activate Route
+    Route->>Middleware: Cek Validitas Token
+    activate Middleware
+    alt Token Tidak Valid/Kosong
+        Middleware-->>Client: HTTP 401 Unauthorized
+    else Token Valid
+        Middleware->>Handler: Teruskan Request (Lolos)
+    end
+    deactivate Middleware
+    
+    activate Handler
+    Handler->>Handler: Parsing JSON & Validasi Payload
+    Handler->>Repo: Create(&student)
+    activate Repo
+    Repo-->>Repo: Generate SQL INSERT
+    Repo-->>Handler: Return Data Tersimpan / Error
+    deactivate Repo
+    
+    Handler-->>Client: HTTP 201 Created (JSON Response Data)
+    deactivate Handler
+    deactivate Route

@@ -1,0 +1,40 @@
+classDiagram
+    class User {
+        +uint ID
+        +String Name
+        +String Email
+        +String PasswordHash
+        +Enum Role
+    }
+    
+    class Student {
+        +uint ID
+        +String FullName
+        +Date BirthDate
+        +Enum Gender
+        +Text Address
+        +String ParentName
+        +String ParentPhone
+    }
+    
+    class Class {
+        +uint ID
+        +String Name
+        +String Level
+        +int Quota
+        +String ScheduleDay
+        +String ScheduleStart
+        +String ScheduleEnd
+    }
+    
+    class Registration {
+        +uint ID
+        +uint StudentID
+        +uint ClassID
+        +String RegistrationCode
+        +DateTime RegistrationDate
+        +Enum Status
+    }
+    
+    Student "1" -- "*" Registration : mendaftar
+    Class "1" -- "*" Registration : terdaftar pada

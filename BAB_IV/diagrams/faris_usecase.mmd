@@ -1,0 +1,23 @@
+flowchart LR
+    Ortu([Orang Tua / Wali Murid])
+    Admin([Admin TK Aqila])
+    
+    subgraph Sistem Front End Pendaftaran
+        UC1(Registrasi Akun)
+        UC2(Login ke Sistem)
+        UC3(Mengisi Form Pendaftaran)
+        UC4(Melihat Status Pendaftaran)
+        UC5(Melihat Daftar Peserta)
+        UC6(Memverifikasi Setuju/Tolak)
+        UC7(Melihat Laporan)
+    end
+    
+    Ortu --- UC1
+    Ortu --- UC2
+    Ortu --- UC3
+    Ortu --- UC4
+    
+    Admin --- UC2
+    Admin --- UC5
+    Admin --- UC6
+    Admin --- UC7

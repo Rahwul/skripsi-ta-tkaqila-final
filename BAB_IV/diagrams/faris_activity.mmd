@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> BukaHalamanDaftar: Orang Tua membuka menu Pendaftaran
+    BukaHalamanDaftar --> IsiForm: Input Data Anak & Orang Tua
+    IsiForm --> ValidasiUI: Klik "Submit"
+    
+    state ValidasiUI {
+        [*] --> CekKosong
+        CekKosong --> FieldKosong: Ada yang belum diisi
+        CekKosong --> LolosValidasi: Semua terisi benar
+    }
+    
+    ValidasiUI --> TampilError: Jika FieldKosong
+    TampilError --> IsiForm: Perbaiki Input
+    
+    ValidasiUI --> KirimKeServer: Jika LolosValidasi
+    KirimKeServer --> TampilSukses: Proses Pendaftaran Berhasil
+    TampilSukses --> [*]
