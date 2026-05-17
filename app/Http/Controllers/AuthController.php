@@ -28,7 +28,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            $response = $this->api->post('/api/admin/login', $validated);
+            $response = $this->api->post('/api/auth/login', $validated);
         } catch (\Throwable $e) {
             return back()->withInput()->withErrors(['email' => 'Tidak dapat menghubungi API']);
         }
@@ -41,15 +41,18 @@ class AuthController extends Controller
 
         $json = $response->json();
         $token = data_get($json, 'data.token');
-        $admin = data_get($json, 'data.admin');
 
         if (! $token) {
             return back()->withInput()->withErrors(['email' => 'Token tidak ditemukan pada respon API']);
         }
 
+        // Decode JWT payload to extract admin info (Go API doesn't return data.admin)
+        $parts = explode('.', $token);
+        $payload = json_decode(base64_decode(strtr($parts[1] ?? '', '-_', '+/')), true);
+
         Session::put('api_token', $token);
-        Session::put('admin_name', data_get($admin, 'name'));
-        Session::put('admin_email', data_get($admin, 'email'));
+        Session::put('admin_name', data_get($payload, 'name', data_get($json, 'data.admin.name', 'Admin')));
+        Session::put('admin_email', data_get($payload, 'email', data_get($json, 'data.admin.email', '')));
 
         return redirect('/dashboard');
     }

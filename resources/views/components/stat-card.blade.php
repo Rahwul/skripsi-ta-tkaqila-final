@@ -1,28 +1,26 @@
 @props([
     'value' => '0',
     'label' => '',
-    'tone' => 'indigo', // indigo|green|amber|rose
+    'tone' => 'emerald',
+    'icon' => null,
 ])
 
 @php
     $toneMap = [
-        'indigo' => ['bg' => 'bg-[#EEF2FF]', 'text' => 'text-[#4F46E5]'],
-        'green'  => ['bg' => 'bg-[#ECFDF5]', 'text' => 'text-[#10B981]'],
-        'amber'  => ['bg' => 'bg-[#FFFBEB]', 'text' => 'text-[#F59E0B]'],
-        'rose'   => ['bg' => 'bg-[#FFF1F2]', 'text' => 'text-[#EF4444]'],
+        'emerald' => ['ring' => 'ring-emerald-500/20', 'bg' => 'bg-emerald-50', 'text' => 'text-emerald-600', 'dot' => 'bg-emerald-500'],
+        'green'   => ['ring' => 'ring-emerald-500/20', 'bg' => 'bg-emerald-50', 'text' => 'text-emerald-600', 'dot' => 'bg-emerald-500'],
+        'amber'   => ['ring' => 'ring-amber-500/20', 'bg' => 'bg-amber-50', 'text' => 'text-amber-600', 'dot' => 'bg-amber-500'],
+        'blue'    => ['ring' => 'ring-blue-500/20', 'bg' => 'bg-blue-50', 'text' => 'text-blue-600', 'dot' => 'bg-blue-500'],
+        'rose'    => ['ring' => 'ring-rose-500/20', 'bg' => 'bg-rose-50', 'text' => 'text-rose-600', 'dot' => 'bg-rose-500'],
+        'indigo'  => ['ring' => 'ring-emerald-500/20', 'bg' => 'bg-emerald-50', 'text' => 'text-emerald-600', 'dot' => 'bg-emerald-500'],
     ];
-    $t = $toneMap[$tone] ?? $toneMap['indigo'];
+    $t = $toneMap[$tone] ?? $toneMap['emerald'];
 @endphp
 
-<div class="rounded-2xl bg-white border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-    <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl {{ $t['bg'] }} flex items-center justify-center">
-            <div class="w-2.5 h-2.5 rounded-full {{ $t['text'] }} bg-current/20"></div>
-        </div>
-        <div class="leading-tight">
-            <p class="text-lg font-extrabold tracking-tight {{ $t['text'] }}">{{ $value }}</p>
-            <p class="text-[11px] text-[#6B7280]">{{ $label }}</p>
-        </div>
+<div class="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-2">
+        <p class="text-xs font-medium text-zinc-500">{{ $label }}</p>
+        <div class="h-2 w-2 rounded-full {{ $t['dot'] }}"></div>
     </div>
+    <p class="text-2xl font-bold tracking-tight {{ $t['text'] }}">{{ $value }}</p>
 </div>
-

@@ -5,69 +5,69 @@
 @section('page_subtitle', 'Ringkasan pendaftaran peserta didik baru')
 
 @section('content')
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <x-stat-card :value="$stat['total']" label="Total Pendaftar" tone="indigo" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <x-stat-card :value="$stat['total']" label="Total Pendaftar" tone="emerald" />
         <x-stat-card :value="$stat['pending']" label="Pending" tone="amber" />
-        <x-stat-card :value="$stat['diproses']" label="Diproses" tone="indigo" />
+        <x-stat-card :value="$stat['diproses']" label="Diproses" tone="blue" />
         <x-stat-card :value="$stat['diterima']" label="Diterima" tone="green" />
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between">
-            <h2 class="font-semibold text-sm sm:text-base text-[#111827]">Pendaftaran Terbaru</h2>
+    <div class="rounded-lg border border-zinc-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-100">
+            <h2 class="text-sm font-semibold text-zinc-900">Pendaftaran Terbaru</h2>
         </div>
         <div class="overflow-x-auto">
-            <table class="min-w-full text-xs sm:text-sm text-left">
-                <thead class="bg-gray-50 text-[#6B7280]">
-                    <tr>
-                        <th class="px-4 py-3 font-medium">Nama Anak</th>
-                        <th class="px-4 py-3 font-medium">Orang Tua</th>
-                        <th class="px-4 py-3 font-medium">Tanggal</th>
-                        <th class="px-4 py-3 font-medium">Status</th>
-                        <th class="px-4 py-3 font-medium text-right">Aksi</th>
+            <table class="w-full text-sm text-left">
+                <thead>
+                    <tr class="border-b border-zinc-100 bg-zinc-50/50">
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Nama Anak</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Orang Tua</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Tanggal</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Status</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-zinc-100">
                     @forelse ($recent as $p)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center text-xs font-bold">
+                        <tr class="hover:bg-zinc-50/80 transition-colors">
+                            <td class="px-4 py-2.5">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="h-7 w-7 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center text-xs font-semibold">
                                         {{ strtoupper(substr($p['nama_anak'] ?? 'A', 0, 2)) }}
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="font-medium text-[#111827]">{{ $p['nama_anak'] ?? '-' }}</span>
-                                        <span class="text-[11px] text-[#6B7280]">ID: {{ $p['id'] ?? '-' }}</span>
+                                    <div>
+                                        <p class="font-medium text-zinc-900 text-sm">{{ $p['nama_anak'] ?? '-' }}</p>
+                                        <p class="text-[11px] text-zinc-400">ID: {{ $p['id'] ?? '-' }}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 text-[#374151]">{{ $p['nama_orang_tua'] ?? '-' }}</td>
-                            <td class="px-4 py-3 text-[#6B7280]">{{ $p['created_at'] ?? '-' }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-2.5 text-zinc-600">{{ $p['nama_orang_tua'] ?? '-' }}</td>
+                            <td class="px-4 py-2.5 text-zinc-500 text-xs">{{ $p['created_at'] ?? '-' }}</td>
+                            <td class="px-4 py-2.5">
                                 @php
                                     $status = $p['status_pendaftaran'] ?? 'pending';
                                     $map = [
-                                        'pending'  => ['bg' => 'bg-yellow-100 text-yellow-800', 'label' => 'Pending'],
-                                        'diproses' => ['bg' => 'bg-blue-100 text-blue-800', 'label' => 'Diproses'],
-                                        'diterima' => ['bg' => 'bg-green-100 text-green-800', 'label' => 'Diterima'],
-                                        'ditolak'  => ['bg' => 'bg-red-100 text-red-800', 'label' => 'Ditolak'],
+                                        'pending'  => ['cls' => 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20', 'label' => 'Pending'],
+                                        'diproses' => ['cls' => 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20', 'label' => 'Diproses'],
+                                        'diterima' => ['cls' => 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20', 'label' => 'Diterima'],
+                                        'ditolak'  => ['cls' => 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20', 'label' => 'Ditolak'],
                                     ];
                                     $s = $map[$status] ?? $map['pending'];
                                 @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $s['bg'] }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium {{ $s['cls'] }}">
                                     {{ $s['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right">
+                            <td class="px-4 py-2.5 text-right">
                                 <a href="{{ route('admin.pendaftar.show', $p['id']) }}"
-                                   class="text-xs font-semibold text-[#4F46E5] hover:text-[#4338CA]">
+                                   class="text-xs font-medium text-emerald-600 hover:text-emerald-800 transition-colors">
                                     Detail →
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-6 text-center text-[#6B7280] text-sm">
+                            <td colspan="5" class="px-4 py-8 text-center text-zinc-400 text-sm">
                                 Belum ada pendaftar.
                             </td>
                         </tr>
@@ -77,4 +77,3 @@
         </div>
     </div>
 @endsection
-

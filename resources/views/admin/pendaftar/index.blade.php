@@ -6,105 +6,109 @@
 
 @section('content')
     @if (session('success'))
-        <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div class="mb-4 flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('success') }}
         </div>
     @endif
 
     @if (session('error'))
-        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div class="mb-4 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('error') }}
         </div>
     @endif
 
     @if ($error)
-        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div class="mb-4 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $error }}
         </div>
     @endif
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="rounded-lg border border-zinc-200 bg-white shadow-sm">
         <form id="bulkForm" action="{{ route('admin.pendaftar.bulk') }}" method="POST">
             @csrf
             <input type="hidden" name="action" id="bulkAction" value="">
 
-            <div class="p-4 sm:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <h2 class="font-semibold text-sm sm:text-base text-[#111827]">Daftar Pendaftar</h2>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-b border-zinc-100">
+                <h2 class="text-sm font-semibold text-zinc-900">Daftar Pendaftar</h2>
                 <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                     <select name="status_pendaftaran" id="bulkStatus"
-                            class="px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/10 text-xs outline-none">
+                            class="h-8 px-2.5 rounded-md border border-zinc-200 bg-white text-xs text-zinc-700 shadow-sm focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 outline-none">
                         <option value="pending">Pending</option>
                         <option value="diproses">Diproses</option>
                         <option value="diterima">Diterima</option>
                         <option value="ditolak">Ditolak</option>
                     </select>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5">
                         <button type="button" id="bulkUpdateBtn"
-                                class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-semibold shadow-sm">
+                                class="inline-flex items-center h-8 px-3 rounded-md bg-zinc-900 text-white text-xs font-medium shadow-sm hover:bg-zinc-800 transition-colors">
                             Ubah Status
                         </button>
                         <button type="button" id="bulkDeleteBtn"
-                                class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-sm">
+                                class="inline-flex items-center h-8 px-3 rounded-md bg-white text-red-600 border border-red-200 text-xs font-medium shadow-sm hover:bg-red-50 transition-colors">
                             Hapus
                         </button>
                     </div>
                 </div>
             </div>
+
             <div class="overflow-x-auto">
-                <table class="min-w-full text-xs sm:text-sm text-left">
-                <thead class="bg-gray-50 text-[#6B7280]">
-                    <tr>
-                        <th class="px-4 py-3 font-medium w-10">
-                            <input id="selectAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-[#4F46E5] focus:ring-[#4F46E5]">
+                <table class="w-full text-sm text-left">
+                <thead>
+                    <tr class="border-b border-zinc-100 bg-zinc-50/50">
+                        <th class="px-4 py-2.5 w-10">
+                            <input id="selectAll" type="checkbox" class="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
                         </th>
-                        <th class="px-4 py-3 font-medium">Nama Anak</th>
-                        <th class="px-4 py-3 font-medium">Orang Tua</th>
-                        <th class="px-4 py-3 font-medium">No. HP</th>
-                        <th class="px-4 py-3 font-medium">Status</th>
-                        <th class="px-4 py-3 font-medium text-right">Aksi</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Nama Anak</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Orang Tua</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">No. HP</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500">Status</th>
+                        <th class="px-4 py-2.5 text-xs font-medium text-zinc-500 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-zinc-100">
                     @forelse ($pendaftar as $p)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" name="ids[]" value="{{ $p['id'] }}" class="rowCheckbox h-4 w-4 rounded border-gray-300 text-[#4F46E5] focus:ring-[#4F46E5]">
+                        <tr class="hover:bg-zinc-50/80 transition-colors">
+                            <td class="px-4 py-2.5">
+                                <input type="checkbox" name="ids[]" value="{{ $p['id'] }}" class="rowCheckbox h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-500">
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center text-xs font-bold">
+                            <td class="px-4 py-2.5">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="h-7 w-7 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center text-xs font-semibold">
                                         {{ strtoupper(substr($p['nama_anak'] ?? 'A', 0, 2)) }}
                                     </div>
-                                    <span class="font-medium text-[#111827]">{{ $p['nama_anak'] ?? '-' }}</span>
+                                    <span class="font-medium text-zinc-900">{{ $p['nama_anak'] ?? '-' }}</span>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 text-[#374151]">{{ $p['nama_orang_tua'] ?? '-' }}</td>
-                            <td class="px-4 py-3 text-[#6B7280]">{{ $p['no_hp'] ?? '-' }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-2.5 text-zinc-600">{{ $p['nama_orang_tua'] ?? '-' }}</td>
+                            <td class="px-4 py-2.5 text-zinc-500 text-xs font-mono">{{ $p['no_hp'] ?? '-' }}</td>
+                            <td class="px-4 py-2.5">
                                 @php
                                     $status = $p['status_pendaftaran'] ?? 'pending';
                                     $map = [
-                                        'pending'  => ['bg' => 'bg-yellow-100 text-yellow-800', 'label' => 'Pending'],
-                                        'diproses' => ['bg' => 'bg-blue-100 text-blue-800', 'label' => 'Diproses'],
-                                        'diterima' => ['bg' => 'bg-green-100 text-green-800', 'label' => 'Diterima'],
-                                        'ditolak'  => ['bg' => 'bg-red-100 text-red-800', 'label' => 'Ditolak'],
+                                        'pending'  => ['cls' => 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20', 'label' => 'Pending'],
+                                        'diproses' => ['cls' => 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20', 'label' => 'Diproses'],
+                                        'diterima' => ['cls' => 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20', 'label' => 'Diterima'],
+                                        'ditolak'  => ['cls' => 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20', 'label' => 'Ditolak'],
                                     ];
                                     $s = $map[$status] ?? $map['pending'];
                                 @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ $s['bg'] }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium {{ $s['cls'] }}">
                                     {{ $s['label'] }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-right">
+                            <td class="px-4 py-2.5 text-right">
                                 <a href="{{ route('admin.pendaftar.show', $p['id']) }}"
-                                   class="text-xs font-semibold text-[#4F46E5] hover:text-[#4338CA]">
+                                   class="text-xs font-medium text-emerald-600 hover:text-emerald-800 transition-colors">
                                     Detail →
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-6 text-center text-[#6B7280] text-sm">
+                            <td colspan="6" class="px-4 py-8 text-center text-zinc-400 text-sm">
                                 Belum ada data pendaftar.
                             </td>
                         </tr>

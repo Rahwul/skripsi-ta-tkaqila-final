@@ -28,8 +28,8 @@ Route::get('/', function (ApiClient $api) {
 Route::get('/pendaftaran', [PendaftaranController::class, 'create'])->name('pendaftaran.create');
 Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/loginadmin', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/loginadmin', [AuthController::class, 'login']);
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 

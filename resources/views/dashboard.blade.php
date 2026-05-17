@@ -52,7 +52,7 @@
                 <header class="flex items-center justify-between mb-8">
                     <div>
                         <h1 class="text-3xl font-bold brand-text">Dashboard</h1>
-                        <p class="text-gray-500 mt-1">Selamat datang kembali, Admin 👋</p>
+                        <p class="text-gray-500 mt-1">Selamat datang kembali, Admin</p>
                     </div>
                     <div class="flex items-center gap-4">
                         <button class="p-2 text-gray-400 hover:brand-text hover:bg-gray-50 rounded-full transition-colors relative">
