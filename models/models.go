@@ -49,3 +49,19 @@ type Registration struct {
 	Student Student `gorm:"foreignKey:StudentID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 	Class   Class   `gorm:"foreignKey:ClassID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
 }
+
+// Flat model specifically for frontend integration
+type Pendaftaran struct {
+	ID                uint      `gorm:"primaryKey" json:"id"`
+	NamaAnak          string    `json:"nama_anak"`
+	TempatLahir       string    `json:"tempat_lahir"`
+	TanggalLahir      string    `json:"tanggal_lahir"`
+	JenisKelamin      string    `json:"jenis_kelamin"`
+	NamaOrangTua      string    `json:"nama_orang_tua"`
+	NoHp              string    `json:"no_hp"`
+	Alamat            string    `json:"alamat"`
+	Catatan           string    `json:"catatan"`
+	StatusPendaftaran string    `gorm:"default:'pending'" json:"status_pendaftaran"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}

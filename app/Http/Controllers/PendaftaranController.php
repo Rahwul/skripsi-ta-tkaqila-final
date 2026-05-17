@@ -48,7 +48,35 @@ class PendaftaranController extends Controller
             ]);
         }
 
-        return redirect()->route('pendaftaran.create')
-            ->with('success', 'Pendaftaran berhasil dikirim. Terima kasih.');
+        // Format nomor telepon admin (gunakan 62)
+        $adminPhone = '6281234567890'; 
+        
+        // Buat pesan WhatsApp
+        $jk = $validated['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan';
+        $pesan = "Halo Admin TK Aqila, Assalamualaikum.\n\n";
+        $pesan .= "Saya ingin mengonfirmasi pendaftaran peserta didik baru dengan detail berikut:\n\n";
+        $pesan .= "👦/👧 *Data Anak*\n";
+        $pesan .= "Nama: {$validated['nama_anak']}\n";
+        $pesan .= "Jenis Kelamin: {$jk}\n";
+        $pesan .= "TTL: {$validated['tempat_lahir']}, {$validated['tanggal_lahir']}\n\n";
+        $pesan .= "👨‍👩‍👧 *Data Orang Tua*\n";
+        $pesan .= "Nama: {$validated['nama_orang_tua']}\n";
+        $pesan .= "No. HP: {$validated['no_hp']}\n";
+        $pesan .= "Alamat: {$validated['alamat']}\n";
+        
+        if (!empty($validated['catatan'])) {
+            $pesan .= "\n📝 *Catatan Tambahan*\n{$validated['catatan']}\n";
+        }
+
+        $pesan .= "\nMohon informasi lebih lanjut mengenai proses pendaftaran ini. Terima kasih.";
+
+        // URL Encode pesan
+        $waUrl = "https://wa.me/{$adminPhone}?text=" . urlencode($pesan);
+
+        // Flash message for successful API save
+        session()->flash('success', 'Pendaftaran berhasil dikirim. Anda sedang dialihkan ke WhatsApp...');
+
+        // Redirect langsung ke WhatsApp
+        return redirect()->away($waUrl);
     }
 }

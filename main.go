@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := db.AutoMigrate(&models.User{}, &models.Student{}, &models.Class{}, &models.Registration{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.Student{}, &models.Class{}, &models.Registration{}, &models.Pendaftaran{}); err != nil {
 		log.Fatal(err)
 	}
 
@@ -33,6 +33,13 @@ func main() {
 	auth := api.Group("/auth")
 	auth.Post("/register", handlers.Register)
 	auth.Post("/login", handlers.Login)
+
+	pendaftaran := api.Group("/pendaftaran")
+	pendaftaran.Post("/", handlers.CreatePendaftaran)
+	pendaftaran.Get("/", handlers.GetAllPendaftaran)
+	pendaftaran.Get("/:id", handlers.GetPendaftaran)
+	pendaftaran.Patch("/:id/status", middleware.Protected(), middleware.AuthorizeRoles("admin"), handlers.UpdateStatusPendaftaran)
+	pendaftaran.Delete("/:id", middleware.Protected(), middleware.AuthorizeRoles("admin"), handlers.DeletePendaftaran)
 
 	port := os.Getenv("PORT")
 	if port == "" {
