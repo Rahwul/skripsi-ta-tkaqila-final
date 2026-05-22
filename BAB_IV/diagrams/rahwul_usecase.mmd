@@ -1,0 +1,18 @@
+flowchart LR
+    Client([Client App - Front End])
+
+    subgraph Sistem Back End API
+        API1(POST /auth/register)
+        API2(POST /auth/login - Generate JWT)
+        API3(GET /me - Ambil Profil)
+        API4(POST /students - Simpan Data Anak)
+        API5(GET /students - List Pendaftar)
+        API6(PUT /students/status - Update Status)
+    end
+
+    Client --- API1
+    Client --- API2
+    Client --- API3
+    Client --- API4
+    Client --- API5
+    Client --- API6

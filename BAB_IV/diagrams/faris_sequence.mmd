@@ -1,0 +1,19 @@
+sequenceDiagram
+    actor OrangTua as Orang Tua
+    participant View as Pendaftaran View (Blade/Tailwind)
+    participant Controller as PendaftaranController
+    
+    OrangTua->>View: Mengisi form data siswa
+    OrangTua->>View: Menekan tombol "Submit"
+    View->>Controller: HTTP POST Data Pendaftaran
+    activate Controller
+    Controller-->>Controller: Validasi data request (Laravel Request)
+    alt Data Tidak Valid
+        Controller-->>View: Redirect back with errors
+        View-->>OrangTua: Tampilkan pesan error warna merah
+    else Data Valid
+        Controller-->>Controller: Teruskan data (Simpan/Kirim ke API)
+        Controller-->>View: Redirect to halaman "Sukses"
+        View-->>OrangTua: Tampilkan Halaman Pendaftaran Sukses
+    end
+    deactivate Controller

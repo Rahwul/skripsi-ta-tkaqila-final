@@ -1,0 +1,19 @@
+@startuml
+start
+:Terima HTTP POST /api/auth/login;
+:Parsing payload JSON (email & password);
+:Query Database (GORM) berdasarkan email;
+if (Email ditemukan?) then (Tidak)
+  :Kirim JSON Error (401 Unauthorized);
+  stop
+else (Ya)
+  if (Password Hash Cocok?) then (Tidak)
+    :Kirim JSON Error (401 Unauthorized);
+    stop
+  else (Ya)
+    :Generate JWT Token;
+    :Kirim JSON Response + Token (200 OK);
+    stop
+  endif
+endif
+@enduml
