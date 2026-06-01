@@ -16,7 +16,7 @@ Kalau admin belum tersimpan di database Anda, buat dulu via endpoint:
 
 ```powershell
 $body='{"name":"Admin Test","email":"admin_test_1@example.com","password":"admin12345"}'
-Invoke-WebRequest -Uri "http://127.0.0.1:3000/api/auth/register" -Method Post -ContentType "application/json" -Body $body
+Invoke-WebRequest -Uri "http://127.0.0.1:3000/api/admin/register" -Method Post -ContentType "application/json" -Body $body
 ```
 
 ### Setelah admin dibuat

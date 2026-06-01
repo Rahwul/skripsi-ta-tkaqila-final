@@ -44,6 +44,10 @@ class DashboardController extends Controller
                 }
                 $recent = array_slice($list, 0, 5);
             }
+        } catch (\Throwable $e) {
+            // Ignore API errors, default to 0 stats
+        }
+
         return view('admin.dashboard', compact('stat', 'recent'));
     }
 }

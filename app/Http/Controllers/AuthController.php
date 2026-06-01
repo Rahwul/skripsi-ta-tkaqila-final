@@ -28,7 +28,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            $response = $this->api->post('/api/auth/login', $validated);
+            $response = $this->api->post('/api/admin/login', $validated);
         } catch (\Throwable $e) {
             return back()->withInput()->withErrors(['email' => 'Tidak dapat menghubungi API']);
         }
