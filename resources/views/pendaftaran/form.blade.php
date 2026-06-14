@@ -21,19 +21,19 @@
             {{-- Statistik Pendaftaran --}}
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
-                    <p class="text-2xl font-bold text-emerald-600">47</p>
+                    <p class="text-2xl font-bold text-emerald-600">{{ $stats['total'] }}</p>
                     <p class="text-[11px] text-gray-400 mt-0.5">Total Pendaftar</p>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
-                    <p class="text-2xl font-bold text-amber-500">12</p>
+                    <p class="text-2xl font-bold text-amber-500">{{ $stats['pending'] }}</p>
                     <p class="text-[11px] text-gray-400 mt-0.5">Menunggu Verifikasi</p>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
-                    <p class="text-2xl font-bold text-blue-500">8</p>
+                    <p class="text-2xl font-bold text-blue-500">{{ $stats['diproses'] }}</p>
                     <p class="text-[11px] text-gray-400 mt-0.5">Sedang Diproses</p>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
-                    <p class="text-2xl font-bold text-emerald-600">27</p>
+                    <p class="text-2xl font-bold text-emerald-600">{{ $stats['diterima'] }}</p>
                     <p class="text-[11px] text-gray-400 mt-0.5">Diterima</p>
                 </div>
             </div>
@@ -198,9 +198,28 @@
                 setDot(1, step >= 2);
                 setDot(2, step >= 3);
 
-                btnPrev.classList.toggle('hidden', step === 1);
-                btnNext.classList.toggle('hidden', step === 3);
-                btnSubmit.classList.toggle('hidden', step !== 3);
+                if (step === 1) {
+                    btnPrev.classList.add('hidden');
+                    btnPrev.classList.remove('inline-flex');
+                    btnNext.classList.remove('hidden');
+                    btnNext.classList.add('inline-flex');
+                    btnSubmit.classList.add('hidden');
+                    btnSubmit.classList.remove('inline-flex');
+                } else if (step === 2) {
+                    btnPrev.classList.remove('hidden');
+                    btnPrev.classList.add('inline-flex');
+                    btnNext.classList.remove('hidden');
+                    btnNext.classList.add('inline-flex');
+                    btnSubmit.classList.add('hidden');
+                    btnSubmit.classList.remove('inline-flex');
+                } else if (step === 3) {
+                    btnPrev.classList.remove('hidden');
+                    btnPrev.classList.add('inline-flex');
+                    btnNext.classList.add('hidden');
+                    btnNext.classList.remove('inline-flex');
+                    btnSubmit.classList.remove('hidden');
+                    btnSubmit.classList.add('inline-flex');
+                }
             }
 
             btnPrev.addEventListener('click', () => {

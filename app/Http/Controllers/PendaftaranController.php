@@ -16,7 +16,38 @@ class PendaftaranController extends Controller
 
     public function create()
     {
-        return view('pendaftaran.form');
+        $stats = [
+            'total' => 47,
+            'pending' => 12,
+            'diproses' => 8,
+            'diterima' => 27,
+        ];
+
+        try {
+            $response = $this->api->get('/api/pendaftaran');
+            if ($response->status() >= 200 && $response->status() < 300) {
+                $list = $response->json('data') ?? [];
+                $dbTotal = count($list);
+                $dbPending = 0;
+                $dbDiproses = 0;
+                $dbDiterima = 0;
+                foreach ($list as $item) {
+                    $status = $item['status_pendaftaran'] ?? 'pending';
+                    if ($status === 'pending') $dbPending++;
+                    if ($status === 'diproses') $dbDiproses++;
+                    if ($status === 'diterima') $dbDiterima++;
+                }
+
+                $stats['total'] = 47 + $dbTotal;
+                $stats['pending'] = 12 + $dbPending;
+                $stats['diproses'] = 8 + $dbDiproses;
+                $stats['diterima'] = 27 + $dbDiterima;
+            }
+        } catch (\Throwable $e) {
+            // Ignore API errors
+        }
+
+        return view('pendaftaran.form', compact('stats'));
     }
 
     public function store(Request $request)
@@ -49,23 +80,23 @@ class PendaftaranController extends Controller
         }
 
         // Format nomor telepon admin (gunakan 62)
-        $adminPhone = '6281234567890'; 
+        $adminPhone = '6285773700156'; 
         
         // Buat pesan WhatsApp
         $jk = $validated['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan';
         $pesan = "Halo Admin TK Aqila, Assalamualaikum.\n\n";
         $pesan .= "Saya ingin mengonfirmasi pendaftaran peserta didik baru dengan detail berikut:\n\n";
-        $pesan .= "👦/👧 *Data Anak*\n";
+        $pesan .= "*Data Anak*\n";
         $pesan .= "Nama: {$validated['nama_anak']}\n";
         $pesan .= "Jenis Kelamin: {$jk}\n";
         $pesan .= "TTL: {$validated['tempat_lahir']}, {$validated['tanggal_lahir']}\n\n";
-        $pesan .= "👨‍👩‍👧 *Data Orang Tua*\n";
+        $pesan .= "*Data Orang Tua*\n";
         $pesan .= "Nama: {$validated['nama_orang_tua']}\n";
         $pesan .= "No. HP: {$validated['no_hp']}\n";
         $pesan .= "Alamat: {$validated['alamat']}\n";
         
         if (!empty($validated['catatan'])) {
-            $pesan .= "\n📝 *Catatan Tambahan*\n{$validated['catatan']}\n";
+            $pesan .= "\n*Catatan Tambahan*\n{$validated['catatan']}\n";
         }
 
         $pesan .= "\nMohon informasi lebih lanjut mengenai proses pendaftaran ini. Terima kasih.";

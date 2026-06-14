@@ -150,9 +150,13 @@
             <p class="mt-3 text-sm text-gray-500 max-w-lg mx-auto">Tenaga pengajar berpengalaman dan bersertifikasi yang penuh kasih sayang.</p>
             <div class="mt-10 grid sm:grid-cols-3 gap-5">
                 @php $gurus = [
-                    ['n' => 'Cecilia Estiarini, S.Pd., M.M.', 'r' => 'Kepala Sekolah', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
-                    ['n' => 'Andela, S.Psi.', 'r' => 'Wakil Kepala', 'bg' => 'bg-amber-50', 'tc' => 'text-amber-600'],
-                    ['n' => 'Anastasia Jayani', 'r' => 'Guru Kelompok Bermain', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
+                    ['n' => 'Vera Novalia, S.Pd. (Ibu Vera)', 'r' => 'Kepala Sekolah', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
+                    ['n' => 'Siti Nuriah Asiah, S.Pd. (Ibu Nunu)', 'r' => 'Guru TK-A', 'bg' => 'bg-amber-50', 'tc' => 'text-amber-600'],
+                    ['n' => 'Fariana Nur Salsabila (Ibu Salsa)', 'r' => 'Guru TK B', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
+                    ['n' => 'Sherly Mila Andini (Ibu Sherly)', 'r' => 'Guru TK B', 'bg' => 'bg-amber-50', 'tc' => 'text-amber-600'],
+                    ['n' => 'Rifani Muliantri (Ibu Rifa)', 'r' => 'Guru TK-A', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
+                    ['n' => 'Ibu Desti', 'r' => 'Guru Helper KB', 'bg' => 'bg-amber-50', 'tc' => 'text-amber-600'],
+                    ['n' => 'Saelatul Rahmah (Ibu Sela)', 'r' => 'Staf TU', 'bg' => 'bg-emerald-50', 'tc' => 'text-emerald-600'],
                 ]; @endphp
                 @foreach ($gurus as $g)
                     <div class="rounded-2xl border border-gray-100 bg-white shadow-sm p-6 text-center hover:shadow-md transition-all">
