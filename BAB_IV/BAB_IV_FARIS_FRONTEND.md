@@ -54,17 +54,23 @@ Pengujian ini secara khusus menggunakan teknik *Equivalence Partitioning* untuk 
 ### 4.3.2 User Acceptance Testing (UAT)
 Tahap pengujian selanjutnya adalah *User Acceptance Testing* (UAT), yang bertujuan untuk memastikan bahwa antarmuka sistem tidak hanya berfungsi secara teknis, tetapi juga mudah digunakan dan dapat diterima oleh pengguna akhir yang sesungguhnya. Untuk mendapatkan data yang representatif dan sesuai dengan konteks proyek ini, pengujian UAT dilakukan dengan melibatkan responden yang secara langsung berkaitan dengan ekosistem TK Aqila, yakni pihak pengelola dan calon pengguna layanan.
 
-Pengujian dilakukan dengan menggunakan data dummy (*dummy data*) operasional TK Aqila, dan melibatkan **10 responden** yang terdiri dari 2 orang staf administrasi TK Aqila dan 8 orang perwakilan wali murid (orang tua). Para responden diminta untuk mencoba sistem pendaftaran ini secara langsung, mulai dari mengisi form, menavigasi halaman, hingga mencoba simulasi *dashboard* admin. Penilaian dilakukan menggunakan kuesioner berskala Likert dari 1 hingga 5, di mana 1 = Sangat Tidak Setuju, 2 = Tidak Setuju, 3 = Netral, 4 = Setuju, dan 5 = Sangat Setuju.
+Pengujian dilakukan dengan menggunakan data dummy (*dummy data*) operasional TK Aqila, dan melibatkan **20 responden** yang terdiri dari 11 orang perwakilan guru/staf pengelola sekolah dan 9 orang perwakilan wali murid (orang tua). Para responden diminta untuk mencoba sistem pendaftaran ini secara langsung, mulai dari mengisi form, menavigasi halaman, hingga mencoba simulasi *dashboard* admin. Penilaian dilakukan menggunakan kuesioner berskala Likert dari 1 hingga 5, di mana 1 = Sangat Tidak Setuju, 2 = Tidak Setuju, 3 = Netral, 4 = Setuju, dan 5 = Sangat Setuju.
 
 **Tabel Hasil Penilaian Responden:**
-| No | Pertanyaan (Aspek Penilaian) | Skor Total (Dari 10 Responden) | Rata-Rata Skala |
+| No | Pertanyaan (Aspek Penilaian) | Skor Total (Dari 20 Responden) | Rata-Rata Skala |
 |---|---|:---:|:---:|
-| 1 | Antarmuka sistem pendaftaran TK Aqila sangat mudah dipahami. | 45 | 4.5 |
-| 2 | Susunan form pendaftaran tidak membingungkan untuk diisi oleh wali murid. | 47 | 4.7 |
-| 3 | Warna, jenis huruf, dan tata letak aplikasi sangat nyaman dilihat (Estetika UI). | 43 | 4.3 |
-| 4 | Aplikasi web beroperasi dengan sangat baik saat dibuka melalui Smartphone (Responsif). | 48 | 4.8 |
-| 5 | Kecepatan peralihan antar halaman web dirasa sangat mulus. | 44 | 4.4 |
-| **Total** | **Skor Aktual Keseluruhan** | **227** | |
+| 1 | Antarmuka sistem pendaftaran TK Aqila sangat mudah dipahami. | 94 | 4.70 |
+| 2 | Susunan form pendaftaran tidak membingungkan untuk diisi oleh wali murid. | 94 | 4.70 |
+| 3 | Warna, jenis huruf, dan tata letak aplikasi sangat nyaman dilihat (Estetika UI). | 89 | 4.45 |
+| 4 | Aplikasi web beroperasi dengan sangat baik saat dibuka melalui Smartphone (Responsif). | 93 | 4.65 |
+| 5 | Kecepatan peralihan antar halaman web dirasa sangat mulus. | 92 | 4.60 |
+| **Total** | **Skor Aktual Keseluruhan** | **462** | |
+
+#### Dokumentasi Hasil UAT (Grafik Skor UAT Faris)
+Berikut adalah visualisasi diagram skor rata-rata hasil UAT antarmuka pendaftaran TK Aqila:
+
+![Grafik UAT Faris](file:///C:/Users/muzak/OneDrive/Muzaki/03.KOPI/09.KOPI RI/File TA/BAB%20IV%20dan%20V/Diagram_UAT_Faris.png)
+*Gambar 4.5: Grafik Hasil UAT Antarmuka Frontend*
 
 **Detail Rumus Perhitungan Kelayakan (Skala Likert):**
 
@@ -72,21 +78,21 @@ Berdasarkan data kuesioner yang terkumpul, tingkat kelayakan sistem dapat dihitu
 1.  **Menentukan Nilai Maksimum Ideal (NMI):**
     Nilai ini merupakan asumsi apabila seluruh responden memberikan nilai tertinggi (5) untuk setiap pertanyaan.
     `NMI = Jumlah Responden × Jumlah Pertanyaan × Skor Tertinggi`
-    `NMI = 10 × 5 × 5`
-    `NMI = 250`
+    `NMI = 20 × 5 × 5`
+    `NMI = 500`
 2.  **Menentukan Skor Aktual Keseluruhan (SAK):**
     Nilai ini didapatkan dari jumlah total skor yang diberikan oleh responden pada tabel penilaian.
-    `SAK = 45 + 47 + 43 + 48 + 44`
-    `SAK = 227`
+    `SAK = 94 + 94 + 89 + 93 + 92`
+    `SAK = 462`
 3.  **Menghitung Persentase Kelayakan:**
     Rumus yang digunakan adalah membagi Skor Aktual Keseluruhan dengan Nilai Maksimum Ideal, kemudian dikalikan 100%.
     `Persentase = (SAK / NMI) × 100%`
-    `Persentase = (227 / 250) × 100%`
-    `Persentase = 0.908 × 100%`
-    `Persentase = 90.8%`
+    `Persentase = (462 / 500) × 100%`
+    `Persentase = 0.924 × 100%`
+    `Persentase = 92.4%`
 
 **Kesimpulan Pengujian:**
-Dengan persentase hasil sebesar **90.8%**, angka ini berada pada rentang *Sangat Layak* (81% - 100%). Hal ini menunjukkan bahwa antarmuka sistem pendaftaran online Bimbel PAUD TK Aqila sangat memuaskan, mudah dipahami, dan siap untuk digunakan secara massal oleh pihak admin maupun para wali murid.
+Dengan persentase hasil sebesar **92.4%**, angka ini berada pada rentang *Sangat Layak* (81% - 100%). Hal ini menunjukkan bahwa antarmuka sistem pendaftaran online Bimbel PAUD TK Aqila sangat memuaskan, mudah dipahami, dan siap untuk digunakan secara massal oleh pihak admin maupun para wali murid.
 
 ## 4.4 Evaluasi Sistem (Post-Testing)
 

@@ -48,170 +48,203 @@ Dalam implementasinya, sistem memisahkan logika ke dalam beberapa *layer* (lapis
 
 Sistem manajemen basis data yang digunakan adalah **MySQL**. Untuk memanipulasi data tanpa perlu menulis sintaks SQL secara manual, diimplementasikan **GORM** sebagai *Object-Relational Mapping* (ORM) pada bahasa Go. 
 
-Berikut adalah detail skema tabel yang digunakan dalam sistem beserta potongan kode model implementasinya dari file `models/models.go`:
+Berikut adalah detail skema tabel yang digunakan dalam sistem beserta potongan kode model implementasinya dari direktori `backend/models`:
 
-#### A. Tabel `users`
-Tabel ini berfungsi sebagai penyimpan data autentikasi baik untuk *admin* panitia maupun wali murid. 
+#### A. Tabel `admins`
+Tabel ini berfungsi sebagai penyimpan data autentikasi admin/panitia penerimaan siswa baru. 
 - `ID`: Bertindak sebagai *Primary Key*.
-- `Name` & `Email`: Mengidentifikasi nama pengguna dan alamat email unik yang digunakan untuk proses *login*.
-- `PasswordHash`: Menyimpan kata sandi yang telah di-*hash* menggunakan *Bcrypt* untuk alasan keamanan.
-- `Role`: Menggunakan tipe data `ENUM('admin','operator','wali murid')` untuk memisahkan batasan hak akses (otorisasi) pada sistem.
+- `Name`: Menyimpan nama admin.
+- `Email`: Menyimpan alamat email unik admin untuk proses *login*.
+- `Password`: Menyimpan kata sandi yang telah di-*hash* menggunakan *Bcrypt* untuk alasan keamanan.
 
-**Contoh Kode Model `User`:**
+**Contoh Kode Model `Admin` (`backend/models/admin.go`):**
 ```go
-type User struct {
-	ID           uint `gorm:"primaryKey"`
-	Name         string
-	Email        string `gorm:"uniqueIndex;size:191"`
-	PasswordHash string
-	Role         string `gorm:"type:ENUM('admin','operator','wali murid');default:admin"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+type Admin struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Name      string    `gorm:"size:191;not null" json:"name"`
+	Email     string    `gorm:"size:191;uniqueIndex;not null" json:"email"`
+	Password  string    `gorm:"size:255;not null" json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 ```
 
-#### B. Tabel `students`
-Tabel ini merupakan pusat penyimpanan data identitas calon siswa yang akan didaftarkan.
+#### B. Tabel `pendaftaran`
+Tabel ini merupakan pusat penyimpanan data identitas calon siswa yang mendaftar di TK Aqila.
 - `ID`: Bertindak sebagai *Primary Key*.
-- `FullName`, `BirthDate`, `Gender`, `Address`: Menyimpan identitas demografis calon siswa.
-- `ParentName`, `ParentPhone`: Menyimpan identitas dan kontak wali murid.
+- `NamaAnak`, `TempatLahir`, `TanggalLahir`, `JenisKelamin`, `Alamat`: Menyimpan identitas demografis calon siswa.
+- `NamaOrangTua`, `NoHP`: Menyimpan identitas dan nomor kontak orang tua/wali murid.
+- `StatusPendaftaran`: Menyatakan status pendaftaran siswa (`pending`, `diproses`, `diterima`, `ditolak`).
 
-**Contoh Kode Model `Student`:**
+**Contoh Kode Model `Pendaftaran` (`backend/models/pendaftaran.go`):**
 ```go
-type Student struct {
-	ID          uint `gorm:"primaryKey"`
-	FullName    string
-	BirthDate   time.Time `gorm:"type:DATE"`
-	Gender      string    `gorm:"type:ENUM('L','P')"`
-	Address     string    `gorm:"type:TEXT"`
-	ParentName  string
-	ParentPhone string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+type Pendaftaran struct {
+	ID                uint               `gorm:"primaryKey" json:"id"`
+	NamaAnak          string             `gorm:"size:191;not null" json:"nama_anak"`
+	TempatLahir       string             `gorm:"size:191;not null" json:"tempat_lahir"`
+	TanggalLahir      time.Time          `gorm:"type:date;not null" json:"tanggal_lahir"`
+	JenisKelamin      string             `gorm:"size:10;not null" json:"jenis_kelamin"`
+	NamaOrangTua      string             `gorm:"size:191;not null" json:"nama_orang_tua"`
+	NoHP              string             `gorm:"size:50;not null" json:"no_hp"`
+	Alamat            string             `gorm:"type:text;not null" json:"alamat"`
+	StatusPendaftaran PendaftaranStatus  `gorm:"type:ENUM('pending','diproses','diterima','ditolak');default:'pending'" json:"status_pendaftaran"`
+	Catatan           string             `gorm:"type:text" json:"catatan"`
+	Berkas            []BerkasPendaftaran `json:"berkas,omitempty"`
+	CreatedAt         time.Time          `json:"created_at"`
+	UpdatedAt         time.Time          `json:"updated_at"`
 }
 ```
 
-#### C. Tabel `classes`
-Tabel ini menyimpan data kelas yang tersedia di TK Aqila.
+#### C. Tabel `berkas_pendaftaran`
+Tabel ini menyimpan data berkas atau dokumen yang diunggah oleh pendaftar sebagai syarat pendaftaran.
 - `ID`: *Primary Key*.
-- `Name`, `Level`: Nama kelas dan tingkatannya.
-- `Quota`: Kapasitas maksimal penerimaan siswa per kelas.
-- `ScheduleDay`, `ScheduleStart`, `ScheduleEnd`: Jadwal masuk dan jam pelajaran kelas.
+- `PendaftaranID`: *Foreign Key* yang menghubungkan ke tabel `pendaftaran`.
+- `JenisBerkas`: Jenis dokumen (misal: "Akte Kelahiran", "Kartu Keluarga").
+- `FilePath`: Path lokasi penyimpanan berkas.
 
-**Contoh Kode Model `Class`:**
+**Contoh Kode Model `BerkasPendaftaran` (`backend/models/berkas_pendaftaran.go`):**
 ```go
-type Class struct {
-	ID            uint `gorm:"primaryKey"`
-	Name          string
-	Level         string
-	Quota         int
-	ScheduleDay   string
-	ScheduleStart string
-	ScheduleEnd   string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+type BerkasPendaftaran struct {
+	ID            uint      `gorm:"primaryKey" json:"id"`
+	PendaftaranID uint      `gorm:"index;not null" json:"pendaftaran_id"`
+	JenisBerkas   string    `gorm:"size:100;not null" json:"jenis_berkas"`
+	FilePath      string    `gorm:"size:255;not null" json:"file_path"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+
+	Pendaftaran Pendaftaran `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 }
 ```
 
-#### D. Tabel `registrations`
-Tabel ini merupakan tabel relasional yang menghubungkan siswa dengan kelas yang didaftar, sekaligus melacak status pendaftaran.
+#### D. Tabel `jadwal`
+Tabel ini menyimpan data jadwal pembelajaran kelas yang ditawarkan di TK Aqila.
 - `ID`: *Primary Key*.
-- `StudentID` & `ClassID`: *Foreign Key* yang menghubungkan tabel `students` dan `classes`.
-- `RegistrationCode`: Kode unik pendaftaran.
-- `Status`: Menyatakan status pendaftaran dengan nilai `pending`, `accepted`, atau `rejected`.
+- `NamaKelas`: Nama kelas (misal: "Kelas A", "Kelas B").
+- `Hari`, `JamMulai`, `JamSelesai`: Detail pelaksanaan pembelajaran.
 
-**Contoh Kode Model `Registration`:**
+**Contoh Kode Model `Jadwal` (`backend/models/jadwal.go`):**
 ```go
-type Registration struct {
-	ID               uint `gorm:"primaryKey"`
-	StudentID        uint
-	ClassID          uint
-	RegistrationCode string    `gorm:"uniqueIndex;size:191"`
-	RegistrationDate time.Time `gorm:"type:DATETIME"`
-	Status           string    `gorm:"type:ENUM('pending','accepted','rejected');default:pending"`
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-
-	Student Student `gorm:"foreignKey:StudentID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
-	Class   Class   `gorm:"foreignKey:ClassID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+type Jadwal struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	NamaKelas  string    `gorm:"size:191;not null" json:"nama_kelas"`
+	Hari       string    `gorm:"size:20;not null" json:"hari"`
+	JamMulai   string    `gorm:"size:10;not null" json:"jam_mulai"`
+	JamSelesai string    `gorm:"size:10;not null" json:"jam_selesai"`
+	Keterangan string    `gorm:"type:text" json:"keterangan"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 ```
 
 
 ### 4.1.3 Antarmuka atau Endpoint API
 
-Implementasi *endpoint* API menjadi jalur komunikasi utama data. Endpoint ini dilindungi oleh *header authorization* berbasis *Bearer Token* (JWT) untuk menjaga keamanan sistem.
+Implementasi *endpoint* API menjadi jalur komunikasi utama data. Beberapa endpoint dilindungi oleh *header authorization* berbasis *Bearer Token* (JWT) untuk menjaga keamanan sistem.
 
-Berikut adalah rute API yang telah diimplementasikan pada file `main.go`:
+Berikut adalah rute API yang telah diimplementasikan pada file `backend/routes/api_routes.go`:
 
 | Method | Endpoint | Deskripsi | Middleware |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Mendaftarkan akun wali murid/admin baru | Publik |
-| `POST` | `/api/auth/login` | Autentikasi untuk mendapat Token JWT | Publik |
-| `GET`  | `/api/me` | Mengambil data user yang sedang login | Protected (Valid Token) |
-| `GET`  | `/api/admin-only` | Endpoint khusus pengujian admin | Protected, AuthorizeRoles("admin") |
+| `POST` | `/api/admin/register` | Mendaftarkan akun admin baru | Publik |
+| `POST` | `/api/admin/login` | Autentikasi admin untuk mendapat Token JWT | Publik |
+| `GET`  | `/api/admin/profile` | Mengambil data profil admin yang sedang login | Protected (Valid JWT Token) |
+| `POST` | `/api/pendaftaran` | Mengirimkan formulir pendaftaran siswa baru | Publik |
+| `GET`  | `/api/pendaftaran` | Mengambil semua daftar pendaftaran siswa | Protected (Valid JWT Token) |
+| `PATCH` | `/api/pendaftaran/:id/status` | Mengubah status pendaftaran siswa | Protected (Valid JWT Token) |
 
-Berikut adalah detail implementasi kode untuk setiap *endpoint* utama di `handlers/auth_controller.go`:
+Berikut adalah detail implementasi kode untuk setiap *endpoint* utama di `backend/handlers/auth_handler.go`:
 
-#### 1. Endpoint Registrasi (`POST /api/auth/register`)
-**Fungsi:** Endpoint ini menerima format JSON (`name`, `email`, `password`), melakukan hashing pada password menggunakan *Bcrypt*, lalu menyimpannya ke tabel `users`.
-**Implementasi Kode (Potongan `Register`):**
+#### 1. Endpoint Registrasi Admin (`POST /api/admin/register`)
+**Fungsi:** Endpoint ini menerima format JSON (`name`, `email`, `password`), memanggil service untuk meng-hash password dengan *Bcrypt*, lalu menyimpannya ke tabel `admins`.
+**Implementasi Kode:**
 ```go
-	var existing models.User
-	if err := database.DB.Where("email = ?", body.Email).First(&existing).Error; err == nil {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"status": "error", "message": "email already registered", "data": nil})
+func (h *AuthHandler) Register(c *fiber.Ctx) error {
+	var body RegisterAdminRequest
+	if err := c.BodyParser(&body); err != nil {
+		return utils.Error(c, fiber.StatusBadRequest, "Payload tidak valid", map[string][]string{
+			"body": {"format JSON tidak valid"},
+		})
+	}
+	if body.Name == "" || body.Email == "" || body.Password == "" {
+		return utils.Error(c, fiber.StatusBadRequest, "Data tidak lengkap", map[string][]string{
+			"name":     {"wajib diisi"},
+			"email":    {"wajib diisi"},
+			"password": {"wajib diisi"},
+		})
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
-	
-	user := models.User{
-		Name:         body.Name,
-		Email:        body.Email,
-		PasswordHash: string(hash),
-		Role:         "admin",
-	}
-	if err := database.DB.Create(&user).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "failed to create user", "data": nil})
-	}
-```
-
-#### 2. Endpoint Login (`POST /api/auth/login`)
-**Fungsi:** Memeriksa email dan validasi kecocokan password dengan hash di database. Jika valid, sistem men-*generate* JWT menggunakan *secret key* yang memiliki masa berlaku 24 jam.
-**Implementasi Kode (Potongan `Login`):**
-```go
-	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(body.Password)); err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "invalid credentials", "data": nil})
+	admin, err := h.authService.Register(body.Name, body.Email, body.Password)
+	if err != nil {
+		return utils.Error(c, fiber.StatusBadRequest, "Gagal registrasi admin", err.Error())
 	}
 
-	secret := getEnv("JWT_SECRET", "secret")
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":   user.ID,
-		"email": user.Email,
-		"role":  user.Role,
-		"exp":   time.Now().Add(24 * time.Hour).Unix(),
-		"iat":   time.Now().Unix(),
+	return utils.Created(c, "Admin berhasil diregistrasi", fiber.Map{
+		"id":    admin.ID,
+		"name":  admin.Name,
+		"email": admin.Email,
 	})
-	signed, err := token.SignedString([]byte(secret))
+}
 ```
 
-#### 3. Endpoint Profil Diri (`GET /api/me`)
-**Fungsi:** Endpoint privat ini membaca `claims` dari JWT (seperti `sub` yang berisi `user.ID`) yang telah didekode oleh middleware, lalu menampilkan detail user dari database secara aman.
-**Implementasi Kode (Potongan `Me`):**
+#### 2. Endpoint Login Admin (`POST /api/admin/login`)
+**Fungsi:** Memvalidasi kredensial email dan password admin. Jika valid, sistem men-*generate* JWT menggunakan *secret key* yang memiliki masa berlaku 24 jam.
+**Implementasi Kode:**
 ```go
-func Me(c *fiber.Ctx) error {
-	v := c.Locals("claims")
-	claims, ok := v.(jwt.MapClaims)
-	
-	// Konversi dan validasi user ID dari token
-	var uid uint
-	// ... logic parsing ID ...
-
-	var user models.User
-	if err := database.DB.First(&user, uid).Error; err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "user not found", "data": nil})
+func (h *AuthHandler) Login(c *fiber.Ctx) error {
+	var body LoginAdminRequest
+	if err := c.BodyParser(&body); err != nil {
+		return utils.Error(c, fiber.StatusBadRequest, "Payload tidak valid", map[string][]string{
+			"body": {"format JSON tidak valid"},
+		})
+	}
+	if body.Email == "" || body.Password == "" {
+		return utils.Error(c, fiber.StatusBadRequest, "Data tidak lengkap", map[string][]string{
+			"email":    {"wajib diisi"},
+			"password": {"wajib diisi"},
+		})
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "message": "me", "data": fiber.Map{"id": user.ID, "name": user.Name, "email": user.Email, "role": user.Role}})
+	token, admin, err := h.authService.Login(body.Email, body.Password)
+	if err != nil {
+		return utils.Error(c, fiber.StatusUnauthorized, "Login gagal", err.Error())
+	}
+
+	return utils.Success(c, "Login berhasil", fiber.Map{
+		"token": token,
+		"admin": fiber.Map{
+			"id":    admin.ID,
+			"name":  admin.Name,
+			"email": admin.Email,
+		},
+	})
+}
+```
+
+#### 3. Endpoint Profil Diri (`GET /api/admin/profile`)
+**Fungsi:** Endpoint privat ini membaca ID admin dari context JWT (setelah divalidasi oleh middleware), lalu menampilkan detail admin dari database.
+**Implementasi Kode:**
+```go
+func (h *AuthHandler) Profile(c *fiber.Ctx) error {
+	adminIDVal := c.Locals(middleware.ContextAdminID)
+	if adminIDVal == nil {
+		return utils.Error(c, fiber.StatusUnauthorized, "Unauthorized", nil)
+	}
+	id, ok := adminIDVal.(uint)
+	if !ok {
+		return utils.Error(c, fiber.StatusUnauthorized, "Unauthorized", "tipe admin_id tidak valid")
+	}
+
+	admin, err := h.adminRepo.FindByID(id)
+	if err != nil {
+		return utils.Error(c, fiber.StatusNotFound, "Admin tidak ditemukan", err.Error())
+	}
+
+	return utils.Success(c, "Profil admin", fiber.Map{
+		"id":         admin.ID,
+		"name":       admin.Name,
+		"email":      admin.Email,
+		"created_at": admin.CreatedAt,
+	})
 }
 ```
 
@@ -221,22 +254,88 @@ Tahapan pengujian (*testing*) dilakukan guna memastikan bahwa setiap baris kode 
 
 ### 4.2.1 Prosedur Pengujian
 
-Metode pengujian yang diterapkan adalah **Black Box Testing** dengan teknik *Equivalence Partitioning* dan *Boundary Value Analysis*. Instrumen yang digunakan adalah aplikasi **Postman**. Pengujian mencakup uji fungsionalitas positif dan negatif guna memastikan sistem berhasil menangkap *error* secara spesifik.
+Metode pengujian yang diterapkan adalah **Black Box Testing** dengan teknik *Equivalence Partitioning*. Instrumen yang digunakan adalah aplikasi **Postman**. Pengujian mencakup uji fungsionalitas positif dan negatif guna memastikan sistem berhasil menangkap *error* secara spesifik.
 
 ### 4.2.2 Data Hasil Pengujian
 
-Berikut adalah dokumentasi hasil uji *Black Box* terhadap *Routing* API Pendaftaran TK Aqila:
+Berikut adalah dokumentasi hasil uji *Black Box* terhadap *Routing* REST API Pendaftaran TK Aqila:
 
-| No | Modul / Endpoint | Skenario Pengujian | Hasil yang Diharapkan | Hasil Aktual | Status |
-|---|---|---|---|---|---|
-| 1 | POST /api/auth/register | Input nama, email valid, password | Menyimpan data, *response* `201 Created` | Menyimpan data, *response* `201 Created` | **Valid** |
-| 2 | POST /api/auth/register | Input email yang sudah terdaftar | *Response* `409 Conflict` (email already registered) | *Response* `409 Conflict` | **Valid** |
-| 3 | POST /api/auth/login | Input email & password benar | Mengeluarkan JWT Token, *response* `200 OK` | Mengeluarkan JWT Token | **Valid** |
-| 4 | POST /api/auth/login | Input password salah | *Response* `401 Unauthorized` (invalid credentials) | *Response* `401 Unauthorized` | **Valid** |
-| 5 | GET /api/me | Akses endpoint tanpa header token | *Response* error akses ditolak dari middleware | *Response* ditolak | **Valid** |
-| 6 | GET /api/admin-only | Login dengan role 'wali murid' dan akses | *Response* `403 Forbidden` / akses ditolak middleware role | *Response* ditolak | **Valid** |
+| Kode | Endpoint (Route) | Method | Skenario Pengujian (Payload JSON) | Hasil yang Diharapkan (HTTP Status) | Hasil Aktual (Di Postman) | Status |
+|---|---|---|---|---|---|---|
+| T01 | `/api/admin/register` | POST | Mengirim data nama, email unik, dan password baru | Menyimpan data admin ke DB, status `201 Created` | 201 Created | **Valid** |
+| T02 | `/api/admin/login` | POST | Mengirim email dan password yang cocok dengan DB | Sistem men-generate JWT dan mengembalikannya (200 OK) | 200 OK (Token Generated) | **Valid** |
+| T03 | `/api/admin/login` | POST | Mengirim password salah atau email tidak terdaftar | Sistem menolak dengan pesan "Login gagal" (401 Unauthorized) | 401 Unauthorized | **Valid** |
+| T04 | `/api/pendaftaran` | POST | Mengirim payload pendaftaran calon siswa lengkap | Data pendaftaran berhasil disimpan (201 Created) | 201 Created | **Valid** |
+| T05 | `/api/pendaftaran` | POST | Mengosongkan kolom wajib (mis. nama, alamat, no hp) | Request ditolak, muncul pesan error validasi (400 Bad Request) | 400 Bad Request | **Valid** |
+| T06 | `/api/pendaftaran/:id/upload-berkas` | POST | Mengunggah dokumen pendukung (form-data: jenis_berkas & file) | Berkas disimpan di server, path dicatat ke DB (201 Created) | 201 Created | **Valid** |
+| T07 | `/api/pendaftaran` | GET | Admin request dengan token JWT valid untuk mengambil data | Mengembalikan daftar pendaftar dalam array JSON (200 OK) | 200 OK | **Valid** |
+| T08 | `/api/pendaftaran/:id/status` | PATCH | Mengirim payload status pendaftaran baru (mis. "diterima") | Status terupdate di database, respons sukses (200 OK) | 200 OK | **Valid** |
+| T09 | `/api/pendaftaran/:id` | DELETE | Menghapus baris data pendaftar berdasarkan ID | Data berhasil dihapus dari database (200 OK) | 200 OK | **Valid** |
+| T10 | `/api/laporan` | GET | Mengirim parameter query start_date & end_date | Mengembalikan rekapitulasi data pendaftar per periode (200 OK) | 200 OK | **Valid** |
+| T11 | `/api/pendaftaran` | GET | Akses endpoint terproteksi tanpa menyertakan Token JWT | Akses ditolak oleh sistem, mengembalikan status 401 Unauthorized | 401 Unauthorized | **Valid** |
 
-*(Catatan: Sisipkan screenshot tampilan response JSON format asli Postman di bawah paragraf ini sebagai lampiran validitas untuk melengkapi sidang skripsi).*
+#### Dokumentasi Visual Hasil Pengujian REST API (Postman Screenshots)
+
+Berikut adalah gambar tangkapan layar (screenshots) pengujian ke-11 skenario API menggunakan Postman sebagai bukti empiris sistem berjalan dengan valid:
+
+##### 1. T01 - Registrasi Admin Baru (`POST /api/admin/register`)
+- **Registrasi Sukses (201 Created)**:
+  ![Registrasi Admin Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_register_success.png)
+  *Gambar 4.6: Pengujian API Registrasi Admin Sukses*
+
+- **Registrasi Gagal - Duplikasi Email (400 Bad Request)**:
+  ![Registrasi Admin Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_register_error.png)
+  *Gambar 4.7: Pengujian API Registrasi Admin Gagal (Duplikasi Email)*
+
+##### 2. T02 & T03 - Login Admin (`POST /api/admin/login`)
+- **Login Sukses (200 OK)**:
+  ![Login Admin Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_login_success.png)
+  *Gambar 4.8: Pengujian API Login Admin Sukses (Mendapatkan Token JWT)*
+
+- **Login Gagal - Password Salah (401 Unauthorized)**:
+  ![Login Admin Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_login_error.png)
+  *Gambar 4.9: Pengujian API Login Admin Gagal (Kredensial Salah)*
+
+##### 3. T04 & T05 - Pendaftaran Siswa Baru (`POST /api/pendaftaran`)
+- **Submit Pendaftaran Sukses (201 Created)**:
+  ![Submit Pendaftaran Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_create.png)
+  *Gambar 4.10: Pengujian API Kirim Data Pendaftaran Siswa Baru*
+
+- **Validasi Gagal - Kolom Kosong (400 Bad Request)**:
+  ![Validasi Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_validation_error.png)
+  *Gambar 4.11: Pengujian Validasi Input Form Kosong*
+
+##### 4. T06 - Upload Berkas Persyaratan (`POST /api/pendaftaran/:id/upload-berkas`)
+- **Upload Berkas Sukses (201 Created)**:
+  ![Upload Berkas Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_upload_berkas_success.png)
+  *Gambar 4.12: Pengujian API Upload Berkas Pendaftaran*
+
+##### 5. T07 - Lihat Semua Data Pendaftaran (`GET /api/pendaftaran`)
+- **Ambil Data Pendaftar Sukses (200 OK)**:
+  ![Get All Pendaftaran Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_get_all.png)
+  *Gambar 4.13: Pengujian API Mengambil Semua Data Pendaftaran oleh Admin*
+
+##### 6. T08 - Update Status Pendaftaran (`PATCH /api/pendaftaran/:id/status`)
+- **Update Status Sukses (200 OK)**:
+  ![Update Status Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_update_status_success.png)
+  *Gambar 4.14: Pengujian API Update Status Pendaftaran*
+
+##### 7. T09 - Hapus Data Pendaftaran (`DELETE /api/pendaftaran/:id`)
+- **Hapus Data Sukses (200 OK)**:
+  ![Hapus Data Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_delete_pendaftaran_success.png)
+  *Gambar 4.15: Pengujian API Hapus Data Pendaftaran*
+
+##### 8. T10 - Laporan Rekapitulasi (`GET /api/laporan`)
+- **Ambil Laporan Sukses (200 OK)**:
+  ![Ambil Laporan Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_laporan_success.png)
+  *Gambar 4.16: Pengujian API Get Laporan Periode*
+
+##### 9. T11 - Proteksi Keamanan JWT (`GET /api/pendaftaran` tanpa token)
+- **Akses Ditolak (401 Unauthorized)**:
+  ![Akses Ditolak](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_jwt_unauthorized.png)
+  *Gambar 4.17: Pengujian Akses Endpoint Privat Tanpa Token JWT*
+
+
 
 ## 4.3 Analisis dan Evaluasi
 

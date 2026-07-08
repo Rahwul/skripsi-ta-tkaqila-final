@@ -28,20 +28,85 @@ Penyimpanan *password* diamankan menggunakan metode enkripsi satu arah (*Hashing
 Pengujian di sisi *Back End* sepenuhnya difokuskan pada pengujian kotak hitam (*Black Box Testing*) berbasis API untuk menguji respons kode HTTP, serta pengujian keamanan *Middleware*. Pengujian ini dilakukan menggunakan perangkat lunak **Postman**.
 
 ### 4.3.1 Pengujian Fungsionalitas API Endpoint (Postman)
-Skenario pengujian menguji keandalan setiap URL *endpoint* dalam memproses format JSON yang benar maupun salah.
+Skenario pengujian menguji keandalan setiap URL *endpoint* dalam memproses format JSON yang benar maupun salah, mencakup 11 skenario pengujian utama (T01 - T11).
 
-| No | Endpoint (Route) | Method | Skenario Pengujian Parameter (Payload JSON) | Hasil yang Diharapkan (HTTP Status) | Hasil Aktual (Di Postman) | Status |
+| Kode | Endpoint (Route) | Method | Skenario Pengujian (Payload JSON) | Hasil yang Diharapkan (HTTP Status) | Hasil Aktual (Di Postman) | Status |
 |---|---|---|---|---|---|---|
-| 1 | `/api/auth/register` | POST | Mengirim data nama, email unik, dan password baru | Sistem mencatat ke DB, merespon dengan JSON Success (201 Created) | 201 Created | **Valid** |
-| 2 | `/api/auth/register` | POST | Mendaftar ulang dengan *email* yang sudah ada di database | Sistem mendeteksi duplikat, merespon pesan "Email already exists" (409 Conflict) | 409 Conflict | **Valid** |
-| 3 | `/api/auth/login` | POST | Mengirim *email* dan *password* yang cocok dengan DB | Sistem men-*generate* JWT dan mengembalikannya (200 OK) | 200 OK (Token Generated) | **Valid** |
-| 4 | `/api/auth/login` | POST | Mengirim *password* yang sengaja disalahkan | Sistem menolak dengan pesan "Invalid credentials" (401 Unauthorized) | 401 Unauthorized | **Valid** |
-| 5 | `/api/students` | POST | Mengirim payload registrasi siswa baru dengan validasi data lengkap | Data siswa dan relasi pendaftaran disimpan (201 Created) | 201 Created | **Valid** |
-| 6 | `/api/students` | GET | Admin *request* URL untuk mengambil seluruh daftar anak didik | Mengembalikan Array JSON berisi data pendaftar (200 OK) | 200 OK | **Valid** |
-| 7 | `/api/students/status` | PUT | Mengirim request untuk mengubah status pendaftar menjadi "accepted" | Mengupdate *field status* di database, respon sukses (200 OK) | 200 OK | **Valid** |
+| T01 | `/api/admin/register` | POST | Mengirim data nama, email unik, dan password baru | Menyimpan data admin ke DB, status `201 Created` | 201 Created | **Valid** |
+| T02 | `/api/admin/login` | POST | Mengirim email dan password yang cocok dengan DB | Sistem men-generate JWT dan mengembalikannya (200 OK) | 200 OK (Token Generated) | **Valid** |
+| T03 | `/api/admin/login` | POST | Mengirim password salah atau email tidak terdaftar | Sistem menolak dengan pesan "Login gagal" (401 Unauthorized) | 401 Unauthorized | **Valid** |
+| T04 | `/api/pendaftaran` | POST | Mengirim payload pendaftaran calon siswa lengkap | Data pendaftaran berhasil disimpan (201 Created) | 201 Created | **Valid** |
+| T05 | `/api/pendaftaran` | POST | Mengosongkan kolom wajib (mis. nama, alamat, no hp) | Request ditolak, muncul pesan error validasi (400 Bad Request) | 400 Bad Request | **Valid** |
+| T06 | `/api/pendaftaran/:id/upload-berkas` | POST | Mengunggah dokumen pendukung (form-data: jenis_berkas & file) | Berkas disimpan di server, path dicatat ke DB (201 Created) | 201 Created | **Valid** |
+| T07 | `/api/pendaftaran` | GET | Admin request dengan token JWT valid untuk mengambil data | Mengembalikan daftar pendaftar dalam array JSON (200 OK) | 200 OK | **Valid** |
+| T08 | `/api/pendaftaran/:id/status` | PATCH | Mengirim payload status pendaftaran baru (mis. "diterima") | Status terupdate di database, respons sukses (200 OK) | 200 OK | **Valid** |
+| T09 | `/api/pendaftaran/:id` | DELETE | Menghapus baris data pendaftar berdasarkan ID | Data berhasil dihapus dari database (200 OK) | 200 OK | **Valid** |
+| T10 | `/api/laporan` | GET | Mengirim parameter query start_date & end_date | Mengembalikan rekapitulasi data pendaftar per periode (200 OK) | 200 OK | **Valid** |
+| T11 | `/api/pendaftaran` | GET | Akses endpoint terproteksi tanpa menyertakan Token JWT | Akses ditolak oleh sistem, mengembalikan status 401 Unauthorized | 401 Unauthorized | **Valid** |
+
+#### Dokumentasi Visual Hasil Pengujian REST API (Postman Screenshots)
+
+Berikut adalah gambar tangkapan layar (screenshots) pengujian ke-11 skenario API menggunakan Postman sebagai bukti empiris sistem berjalan dengan valid:
+
+##### 1. T01 - Registrasi Admin Baru (`POST /api/admin/register`)
+- **Registrasi Sukses (201 Created)**:
+  ![Registrasi Admin Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_register_success.png)
+  *Gambar 4.6: Pengujian API Registrasi Admin Sukses*
+
+- **Registrasi Gagal - Duplikasi Email (400 Bad Request)**:
+  ![Registrasi Admin Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_register_error.png)
+  *Gambar 4.7: Pengujian API Registrasi Admin Gagal (Duplikasi Email)*
+
+##### 2. T02 & T03 - Login Admin (`POST /api/admin/login`)
+- **Login Sukses (200 OK)**:
+  ![Login Admin Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_login_success.png)
+  *Gambar 4.8: Pengujian API Login Admin Sukses (Mendapatkan Token JWT)*
+
+- **Login Gagal - Password Salah (401 Unauthorized)**:
+  ![Login Admin Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_login_error.png)
+  *Gambar 4.9: Pengujian API Login Admin Gagal (Kredensial Salah)*
+
+##### 3. T04 & T05 - Pendaftaran Siswa Baru (`POST /api/pendaftaran`)
+- **Submit Pendaftaran Sukses (201 Created)**:
+  ![Submit Pendaftaran Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_create.png)
+  *Gambar 4.10: Pengujian API Kirim Data Pendaftaran Siswa Baru*
+
+- **Validasi Gagal - Kolom Kosong (400 Bad Request)**:
+  ![Validasi Gagal](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_validation_error.png)
+  *Gambar 4.11: Pengujian Validasi Input Form Kosong*
+
+##### 4. T06 - Upload Berkas Persyaratan (`POST /api/pendaftaran/:id/upload-berkas`)
+- **Upload Berkas Sukses (201 Created)**:
+  ![Upload Berkas Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_upload_berkas_success.png)
+  *Gambar 4.12: Pengujian API Upload Berkas Pendaftaran*
+
+##### 5. T07 - Lihat Semua Data Pendaftaran (`GET /api/pendaftaran`)
+- **Ambil Data Pendaftar Sukses (200 OK)**:
+  ![Get All Pendaftaran Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_pendaftaran_get_all.png)
+  *Gambar 4.13: Pengujian API Mengambil Semua Data Pendaftaran oleh Admin*
+
+##### 6. T08 - Update Status Pendaftaran (`PATCH /api/pendaftaran/:id/status`)
+- **Update Status Sukses (200 OK)**:
+  ![Update Status Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_update_status_success.png)
+  *Gambar 4.14: Pengujian API Update Status Pendaftaran*
+
+##### 7. T09 - Hapus Data Pendaftaran (`DELETE /api/pendaftaran/:id`)
+- **Hapus Data Sukses (200 OK)**:
+  ![Hapus Data Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_delete_pendaftaran_success.png)
+  *Gambar 4.15: Pengujian API Hapus Data Pendaftaran*
+
+##### 8. T10 - Laporan Rekapitulasi (`GET /api/laporan`)
+- **Ambil Laporan Sukses (200 OK)**:
+  ![Ambil Laporan Sukses](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_laporan_success.png)
+  *Gambar 4.16: Pengujian API Get Laporan Periode*
+
+##### 9. T11 - Proteksi Keamanan JWT (`GET /api/pendaftaran` tanpa token)
+- **Akses Ditolak (401 Unauthorized)**:
+  ![Akses Ditolak](file:///c:/laragon/www/web-pendaftaran-tkaqila/BAB_IV/diagrams/postman_jwt_unauthorized.png)
+  *Gambar 4.17: Pengujian Akses Endpoint Privat Tanpa Token JWT*
 
 ### 4.3.2 Pengujian Keamanan Autorisasi & Middleware (JWT Testing)
-Pengujian ini secara khusus membidik ketahanan *Middleware* pelindung *endpoint* dari upaya akses tidak sah (*Unauthorized Access*). Skenario ini diuji pada *endpoint* privat `/api/students`.
+Pengujian ini secara khusus membidik ketahanan *Middleware* pelindung *endpoint* dari upaya akses tidak sah (*Unauthorized Access*). Skenario ini diuji pada *endpoint* privat `/api/pendaftaran`.
 
 1. **Pengujian Tanpa Token (*Missing Token*)**
    * **Skenario**: Menembak *endpoint* privat namun *header* `Authorization` dikosongkan.
@@ -56,7 +121,7 @@ Pengujian ini secara khusus membidik ketahanan *Middleware* pelindung *endpoint*
    * **Hasil Aktual**: Middleware membaca bagian klaim *Exp*, dan menggagalkan otentikasi dengan status `401 Unauthorized`. (Valid).
 
 4. **Pengujian Batas Hak Akses (*Role Based Access Control - RBAC*)**
-   * **Skenario**: Token JWT valid milik "Wali Murid" mencoba mengakses *endpoint* khusus Admin (seperti `PUT /students/status` untuk menyetujui kelasnya sendiri).
+   * **Skenario**: Token JWT valid milik "Wali Murid" mencoba mengakses *endpoint* khusus Admin (seperti `PATCH /api/pendaftaran/:id/status` untuk menyetujui pendaftarannya sendiri).
    * **Hasil Aktual**: Sistem mengizinkan otentikasi JWT, namun terblokir pada *Middleware* pengecekan Role, memberikan respons penolakan tegas `403 Forbidden (Insufficient Role)`. (Valid).
 
 ## 4.4 Evaluasi Sistem (Post-Testing)
